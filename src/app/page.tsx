@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaArrowRight } from 'react-icons/fa';
@@ -13,34 +12,8 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
-
-const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-const phoneRegex = /^010\d{8}$/;
-
-const formSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: '이름은 2글자 이상이어야 합니다.' })
-    .max(50, { message: '이름은 50글자 이하이어야 합니다.' }),
-  email: z.string().email({ message: '올바른 이메일을 입력해주세요.' }),
-  phone: z
-    .string()
-    .min(11, { message: '연락처는 11자리어야 합니다.' })
-    .max(11, { message: '연락처는 11자리어야 합니다.' })
-    .refine((val) => phoneRegex.test(val), { message: '전화번호 앞자리는 010으로 시작해야합니다.' }),
-  role: z.string().min(2, { message: '역할을 선택해주세요.' }),
-  password: z
-    .string()
-    .min(6, { message: '비밀번호는 6자리 이상이어야 합니다.' })
-    .refine((val) => passwordRegex.test(val), { message: '비밀번호는 특수문자, 숫자를 포함해야합니다.' }),
-  confirmPassword: z
-    .string()
-    .min(6, { message: '비밀번호는 6자리 이상이어야 합니다.' })
-    .refine((val) => passwordRegex.test(val), { message: '비밀번호는 특수문자, 숫자를 포함해야합니다.' }),
-});
-
-import React from 'react';
+import { formSchema } from '@/validators/auth';
+import FormComponents from '@/components/FormComponents';
 
 const LoginForm = () => {
   const [pageNum, setPageNum] = useState(0);
@@ -84,8 +57,7 @@ const LoginForm = () => {
       });
       return false;
     }
-
-    console.log(values);
+    alert(JSON.stringify(values));
   };
 
   return (
@@ -103,45 +75,14 @@ const LoginForm = () => {
                 animate={{ translateX: `${pageNum * -100}%` }}
                 transition={{ ease: 'easeInOut' }}
               >
-                <FormField
+                <FormComponents control={form.control} label="이름" name="username" placeholder="홍길동" />
+                <FormComponents
                   control={form.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>이름</FormLabel>
-                      <FormControl>
-                        <Input placeholder="홍길동" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
+                  label="이메일"
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>이메일</FormLabel>
-                      <FormControl>
-                        <Input placeholder="hello@sparta-devcamp.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  placeholder="hello@sparta-devcamp.com"
                 />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>연락처</FormLabel>
-                      <FormControl>
-                        <Input placeholder="01000000000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormComponents control={form.control} label="연락처" name="phone" placeholder="01000000000" />
                 <FormField
                   control={form.control}
                   name="role"
@@ -172,31 +113,12 @@ const LoginForm = () => {
                   ease: 'easeInOut',
                 }}
               >
-                <FormField
+                <FormComponents control={form.control} label="비밀번호" name="password" inputType="password" />
+                <FormComponents
                   control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>비밀번호</FormLabel>
-                      <FormControl>
-                        <Input type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
+                  label="비밀번호 확인"
                   name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>비밀번호 확인</FormLabel>
-                      <FormControl>
-                        <Input type="password" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  inputType="password"
                 />
               </motion.div>
               <Button type="button" className={cn({ hidden: pageNum === 1 })} onClick={nextStep}>
